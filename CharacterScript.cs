@@ -33,12 +33,14 @@ public class CharacterScript : MonoBehaviour
     private GameObject FirstPersonCam,ThirdPersonCam, TPSbuilderCam;
     [SerializeField]
     bool action, jump;
-    public GameObject object_to_Instantiate;
+    public GameObject [] object_to_Instantiate;
     [SerializeField]
     Transform instantiatePositionTransform;
     [SerializeField]
     bool buildCam;
     public CinemachineVirtualCamera builderCam;
+    [SerializeField]
+    int itemcategory,itemnumber;
     
     
 
@@ -51,6 +53,8 @@ public class CharacterScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        itemnumber = PlayerPrefs.GetInt("itemnumber");
+        itemcategory = PlayerPrefs.GetInt("itemcategory");
 
         if (Input.GetKeyDown(KeyCode.V)) 
         {
@@ -63,9 +67,13 @@ public class CharacterScript : MonoBehaviour
             builderCam.LookAt = instantiatePositionTransform;
             builderCam.Follow = instantiatePositionTransform;
             BuildMovement();
+            instantiatePositionTransform.gameObject.SetActive(true);
+            
+            changeItemNumber();
         }
         else
         {
+            instantiatePositionTransform.gameObject.SetActive(false);
             Movement(); 
             Jump();
             Action();
@@ -86,19 +94,43 @@ public class CharacterScript : MonoBehaviour
 
     }
 
+    private void changeItemNumber()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1)) 
+        {
+            itemnumber = itemnumber - 1;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            itemnumber = itemnumber + 1;
+        }
+
+        if (itemnumber < 0) 
+        {
+            itemnumber = 0;
+        }
+
+        PlayerPrefs.SetInt("itemnumber",itemnumber);
+    }
+
     private void Build()
     {
         int wall_count = PlayerPrefs.GetInt("wall_count");
+        int structure_count = PlayerPrefs.GetInt("structure_count");
         float rotation_x = instantiatePositionTransform.eulerAngles.x;
         float rotation_y = instantiatePositionTransform.eulerAngles.y;
         float rotation_z = instantiatePositionTransform.eulerAngles.z;
-        GameObject currentGameObject =  Instantiate(object_to_Instantiate,instantiatePositionTransform.position,Quaternion.Euler(new Vector3(rotation_x,rotation_y,rotation_z)));
+        GameObject currentGameObject =  Instantiate(object_to_Instantiate[itemnumber],instantiatePositionTransform.position,Quaternion.Euler(new Vector3(rotation_x,rotation_y,rotation_z)));
         ObjectManager objectManager = GameObject.FindGameObjectWithTag("GAMEMANAGER").GetComponent<ObjectManager>();
         objectManager.AddToList(currentGameObject);
         //
         if (currentGameObject.tag == "Wall") 
         {
             PlayerPrefs.SetInt("wall_count",wall_count + 1);
+        }
+        if (currentGameObject.tag == "Structure")
+        {
+            PlayerPrefs.SetInt("structure_count", structure_count + 1);
         }
     }
 
@@ -107,7 +139,7 @@ public class CharacterScript : MonoBehaviour
         float rotation_x = instantiatePositionTransform.eulerAngles.x;
         float rotation_y = instantiatePositionTransform.eulerAngles.y;
         float rotation_z = instantiatePositionTransform.eulerAngles.z;
-        GameObject o = Instantiate(object_to_Instantiate, instantiatePositionTransform.position, Quaternion.Euler(new Vector3(rotation_x, rotation_y, rotation_z)));
+        GameObject o = Instantiate(object_to_Instantiate[itemnumber], instantiatePositionTransform.position, Quaternion.Euler(new Vector3(rotation_x, rotation_y, rotation_z)));
         Destroy(o,0.15f);
         float rotationX = 0;
         float rotationY = 0;
@@ -134,7 +166,7 @@ public class CharacterScript : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.R)) 
         {
-            rotationZ = Input.GetAxisRaw("Mouse Y") / 5f;
+            rotationZ = Input.GetAxisRaw("Mouse Y") / 1.5f;
         }
        
 
@@ -197,25 +229,6 @@ public class CharacterScript : MonoBehaviour
 
     }
 
-    private void MenuPause()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            pause = !pause;
-        }
-
-        if (pause)
-        {
-            Time.timeScale = 0;
-        }
-        else 
-        {
-            Time.timeScale = 1;
-        }
-
-        
-    }
-
     private void CameraSwitch()
     {
             switch (buildCam)
@@ -263,6 +276,7 @@ public class CharacterScript : MonoBehaviour
 
     private void GetComponentsOnStart() 
     {
+       
         instantiatePositionTransform = GameObject.FindGameObjectWithTag("objectposition").GetComponent<Transform>();
         jumpheight = 200;
         pause = false;
