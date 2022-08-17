@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 041239faf057e4942a44ef14047cea3e, type: 3}
+  m_Name: Item
+  m_EditorClassIdentifier: 
+  itemName: Sword
+  itemHP: 20
+  itemTexture: {fileID: 2800000, guid: 8b08fd24682f9764896b4c2078e03d16, type: 3}
+  damagefactor: 0
+  speedfactor: 0
+  healfactor: 0
+  weapon: 0
+  consumable: 0
+  cancraft: 0
+  wood: 0
+  metal: 0
+  stone: 0
+  gem: 0
